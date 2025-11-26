@@ -19,7 +19,7 @@ import tempfile
 
 # Internal imports
 
-from schema import (
+from api.schema import (
     CropPriceInput, 
     CropPriceOutput, 
     WeatherSoilData,
@@ -28,9 +28,9 @@ from schema import (
     DiseaseResponse
 )
 
-from authorization import validate_api_key
+from api.authorization import validate_api_key
 
-from logic import (
+from api.logic import (
     reverse_geocode_state,
     fetch_open_meteo,
     compute_features,

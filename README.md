@@ -1,3 +1,15 @@
+---
+title: Farmingo API
+emoji: 🌾
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+license: mit
+short_description: Farmingo API (FastAPI) deployed as a Docker Space.
+---
+
+
 ## Files
 
 * `api.py` — main FastAPI application. Must define `app = FastAPI()` at module level and expose the inference endpoint.
