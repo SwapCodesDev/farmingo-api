@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmingo Crop Recommendation</title>
+</head>
+<body>
+    <h2>Farmingo Crop Recommendation</h2>
+
+    <pre id="log"></pre>
+    <pre id="response"></pre>
+    <pre id="error" style="color:red;"></pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        function log(msg) {
+            document.getElementById("log").textContent += msg + "\n";
+        }
+
+        async function getLocationAndSend() {
+            log("Requesting browser location...");
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+
+                log(`Location detected: ${lat}, ${lon}`);
+
+                // Step 1 → MUST send to /location
+                log("Sending location to backend (/location)...");
+                const locRes = await fetch(`${API_BASE}/location`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        latitude: lat,
+                        longitude: lon,
+                    }),
+                });
+
+                const locData = await locRes.json();
+                log("Location saved on backend: " + JSON.stringify(locData));
+
+                // Step 2 → Call /recommend
+                log("Calling /recommend...");
+                const recRes = await fetch(`${API_BASE}/recommend`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        auto_location: true,
+                        latitude: lat,
+                        longitude: lon
+                    }),
+                });
+
+                const recData = await recRes.json();
+
+                if (!recRes.ok) {
+                    document.getElementById("error").textContent =
+                        "Server error: " + JSON.stringify(recData, null, 2);
+                    return;
+                }
+
+                document.getElementById("response").textContent =
+                    JSON.stringify(recData, null, 2);
+            },
+            (err) => {
+                document.getElementById("error").textContent =
+                    "Location permission denied: " + err.message;
+            });
+        }
+
+        window.onload = getLocationAndSend;
+    </script>
+</body>
+</html>
